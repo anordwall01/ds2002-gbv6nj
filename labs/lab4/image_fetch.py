@@ -3,11 +3,10 @@
 import boto3
 import requests
 import os
-import logging
-import boto3
-from botocore.exceptions import ClientError
 
+s3 = boto3.client('s3')
 
+#fetch file from internet
 def download_file(url, file_path):
     try:
         response = requests.get(url, stream=True)
@@ -22,58 +21,30 @@ def download_file(url, file_path):
         print(f"Error downloading: {e}")
 
 
-
-url = https://www.animalleague.org/wp-content/uploads/2022/02/feature-beth-blog-feb2022.jpg
-
-
-# Example usage:
-image_url = "https://www.discoverboating.com/sites/default/files/Sailboat-Types_1.jpg"
-file = "downloaded_image.gif"
+image_url = "https://darlingjadore.com/wp-content/uploads/2020/04/IMG_0985-1-scaled.jpg"
+file = "downloaded_image.jpg"
 path = os.path.join(os.getcwd(), file) # Saves to current directory
 
 download_file(image_url, path)
 
 
-def create_presigned_url(bucket_name, object_name, expiration=3600):
-    """Generate a presigned URL to share an S3 object
+#upload file to bucket
+def upload_file(file_name, bucket, object_name):
+        response = s3.upload_file(file_name, bucket, object_name)
+        print(response)
+        return True
 
-    :param bucket_name: string
-    :param object_name: string
-    :param expiration: Time in seconds for the presigned URL to remain valid
-    :return: Presigned URL as string. If error, returns None.
-    """
+upload_file("downloaded_image.jpg","ds2002-gbv6nj","image-UPLOADED.jpg")
 
-    # Generate a presigned URL for the S3 object
-    s3_client = boto3.client('s3')
-    try:
-        response = s3_client.generate_presigned_url('get_object',
-                                                    Params={'Bucket': bucket_name,
-                                                            'Key': object_name},
-                                                    ExpiresIn=expiration)
-    except ClientError as e:
-        logging.error(e)
-        return None
+#create link
+bucket_name = "ds2002-gbv6nj"
+object_name = "image-UPLOADED.jpg"
+expires_in = 6870
 
-    # The response def create_presigned_url(bucket_name, object_name, expiration=3600):
-    """Generate a presigned URL to share an S3 object
+response = s3.generate_presigned_url(
+    'get_object',
+    Params={'Bucket': bucket_name, 'Key': object_name},
+    ExpiresIn=expires_in
+)
 
-    :param bucket_name: string
-    :param object_name: string
-    :param expiration: Time in seconds for the presigned URL to remain valid
-    :return: Presigned URL as string. If error, returns None.
-    """
-
-    # Generate a presigned URL for the S3 object
-    s3_client = boto3.client('s3')
-    try:
-        response = s3_client.generate_presigned_url('get_object',
-                                                    Params={'Bucket': bucket_name,
-                                                            'Key': object_name},
-                                                    ExpiresIn=expiration)
-    except ClientError as e:
-        logging.error(e)
-        return None
-
-    # The response contains the presigned URL
-    return responsecontains the presigned URL
-    return response
+ print(f"URL: {response}")
